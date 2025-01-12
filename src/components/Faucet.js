@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Wallet, parseEther, isAddress } from "ethers";
 import { getProvider } from "../utils/connect";
 
@@ -6,10 +6,44 @@ const Faucet = () => {
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cooldownActive, setCooldownActive] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(null);
+
+  useEffect(() => {
+    const lastClaimTime = localStorage.getItem(`lastClaim_${address}`);
+    const currentTime = Date.now();
+    const cooldownPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+    if (lastClaimTime && currentTime - lastClaimTime < cooldownPeriod) {
+      setCooldownActive(true);
+      setRemainingTime(
+        Math.ceil(
+          (cooldownPeriod - (currentTime - lastClaimTime)) / (60 * 60 * 1000)
+        )
+      );
+    } else {
+      setCooldownActive(false);
+    }
+  }, [address]);
 
   const sendEth = async () => {
     if (!isAddress(address)) {
       setMessage("Invalid Ethereum address");
+      return;
+    }
+
+    // Check cooldown
+    const lastClaimTime = localStorage.getItem(`lastClaim_${address}`);
+    const currentTime = Date.now();
+    const cooldownPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+    if (lastClaimTime && currentTime - lastClaimTime < cooldownPeriod) {
+      const remainingTime = Math.ceil(
+        (cooldownPeriod - (currentTime - lastClaimTime)) / (60 * 60 * 1000)
+      );
+      setMessage(
+        `Cooldown active. Please wait ${remainingTime} hour(s) before claiming again.`
+      );
       return;
     }
 
@@ -23,8 +57,13 @@ const Faucet = () => {
 
       const tx = await wallet.sendTransaction({
         to: address,
-        value: parseEther("0.001"),
+        value: parseEther("0.001"), // Send 0.001 ETH
       });
+
+      // Save the current time as the last claim time for the address
+      localStorage.setItem(`lastClaim_${address}`, currentTime);
+      setCooldownActive(true);
+      setRemainingTime(24);
 
       setMessage(`Transaction sent! Hash: ${tx.hash}`);
     } catch (error) {
@@ -41,7 +80,6 @@ const Faucet = () => {
         <img src="/base-logo.svg" alt="Base Logo" className="w-10 h-10 mr-3" />
         Base Sepolia ETH Faucet
       </h1>
-      <br />
       <p className="text-sm text-gray-400 mb-12">
         This faucet sends 0.001 Base Sepolia ETH. If it runs out, please refill
         or contact me!
@@ -60,15 +98,22 @@ const Faucet = () => {
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           className="w-full p-4 mb-6 rounded-lg border border-gray-700 bg-gray-800 text-white placeholder-gray-400"
+          disabled={cooldownActive}
         />
         <button
           onClick={sendEth}
-          className={`w-full p-4 rounded-lg bg-blue-600 hover:bg-blue-700 transition ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
+          className={`w-full p-4 rounded-lg ${
+            cooldownActive
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 transition"
           }`}
-          disabled={loading}
+          disabled={loading || cooldownActive}
         >
-          {loading ? "Sending..." : "Send 0.001 ETH (Instant) ⚡️"}
+          {cooldownActive
+            ? `Please wait ${remainingTime} hour(s)`
+            : loading
+            ? "Sending..."
+            : "Send 0.001 ETH (Instant) ⚡️"}
         </button>
       </div>
       {message && <p className="mt-6 text-lg">{message}</p>}
