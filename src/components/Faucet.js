@@ -127,6 +127,12 @@ const Faucet = () => {
         >
           99promitsaha
         </a>
+        <br />
+        <br />
+        <span className="text-xs text-gray-500">
+          Disclaimer: This faucet is not associated with Base or Coinbase. It is
+          independently developed and operated by an individual.
+        </span>
       </footer>
     </div>
   );
