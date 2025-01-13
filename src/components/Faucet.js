@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Wallet, parseEther, isAddress } from "ethers";
+import { Wallet, parseEther, isAddress, formatEther } from "ethers";
 import { getProvider } from "../utils/connect";
+import FaucetTransactions from "../components/FaucetTransactions";
 
 const Faucet = () => {
   const [address, setAddress] = useState("");
@@ -8,6 +9,7 @@ const Faucet = () => {
   const [loading, setLoading] = useState(false);
   const [cooldownActive, setCooldownActive] = useState(false);
   const [remainingTime, setRemainingTime] = useState(null);
+  const [faucetBalance, setFaucetBalance] = useState("N/A");
 
   useEffect(() => {
     const lastClaimTime = localStorage.getItem(`lastClaim_${address}`);
@@ -25,6 +27,23 @@ const Faucet = () => {
       setCooldownActive(false);
     }
   }, [address]);
+
+  // Fetch Faucet Balance
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const provider = getProvider();
+        const faucetAddress = "0xc5ae0c80057661FfE0c28544F5Fa27328f92fFf2";
+        const balance = await provider.getBalance(faucetAddress);
+        setFaucetBalance(formatEther(balance));
+      } catch (error) {
+        console.error("Error fetching faucet balance:", error);
+        setFaucetBalance("N/A");
+      }
+    };
+
+    fetchBalance();
+  }, []);
 
   const sendEth = async () => {
     if (!isAddress(address)) {
@@ -73,14 +92,24 @@ const Faucet = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white relative">
+      <div className="absolute top-4 right-4 flex items-center text-gray-400 text-xs space-x-1">
+        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+        <span>
+          Status: Live, with{" "}
+          {faucetBalance !== "N/A"
+            ? `${parseFloat(faucetBalance).toFixed(2)} ETH`
+            : "N/A"}
+        </span>
+      </div>
       <h1 className="text-4xl font-bold mb-4 flex items-center">
         <img src="/base-logo.svg" alt="Base Logo" className="w-10 h-10 mr-3" />
         Base Sepolia ETH Faucet
       </h1>
       <p className="text-sm text-gray-400 mb-8">
-        The Base Sepolia Faucet is your go-to source for testnet ETH on Base, offering a
-        fast, reliable, and login-free experience on the Base Sepolia network.
+        The Base Sepolia Faucet is your go-to source for testnet ETH on Base,
+        offering a fast, reliable, and login-free experience on the Base Sepolia
+        network.
       </p>
       <div className="w-full max-w-md mb-8">
         <input
@@ -108,6 +137,9 @@ const Faucet = () => {
         </button>
       </div>
       {message && <p className="mt-6 text-lg">{message}</p>}
+
+      <FaucetTransactions />
+      
       <footer className="absolute bottom-4 w-full text-center text-sm text-gray-400">
         Built with <span className="text-blue-500">❤️</span> from India 🇮🇳 by{" "}
         <a
