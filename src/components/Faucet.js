@@ -12,7 +12,7 @@ const Faucet = () => {
   useEffect(() => {
     const lastClaimTime = localStorage.getItem(`lastClaim_${address}`);
     const currentTime = Date.now();
-    const cooldownPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const cooldownPeriod = 24 * 60 * 60 * 1000;
 
     if (lastClaimTime && currentTime - lastClaimTime < cooldownPeriod) {
       setCooldownActive(true);
@@ -32,10 +32,9 @@ const Faucet = () => {
       return;
     }
 
-    // Check cooldown
     const lastClaimTime = localStorage.getItem(`lastClaim_${address}`);
     const currentTime = Date.now();
-    const cooldownPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const cooldownPeriod = 24 * 60 * 60 * 1000;
 
     if (lastClaimTime && currentTime - lastClaimTime < cooldownPeriod) {
       const remainingTime = Math.ceil(
@@ -57,10 +56,9 @@ const Faucet = () => {
 
       const tx = await wallet.sendTransaction({
         to: address,
-        value: parseEther("0.001"), // Send 0.001 ETH
+        value: parseEther("0.001"),
       });
 
-      // Save the current time as the last claim time for the address
       localStorage.setItem(`lastClaim_${address}`, currentTime);
       setCooldownActive(true);
       setRemainingTime(24);
@@ -124,7 +122,7 @@ const Faucet = () => {
         <br />
         <span className="text-xs text-gray-500">
           Disclaimer: This faucet is not associated with Base or Coinbase. It is
-          independently developed and operated by an individual.
+          independently developed and maintained.
         </span>
         <br />
         <span className="text-xs text-gray-500">
