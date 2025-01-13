@@ -80,16 +80,9 @@ const Faucet = () => {
         <img src="/base-logo.svg" alt="Base Logo" className="w-10 h-10 mr-3" />
         Base Sepolia ETH Faucet
       </h1>
-      <p className="text-sm text-gray-400 mb-12">
-        This faucet sends 0.001 Base Sepolia ETH. If it runs out, please refill
-        or contact me!
-        <br />
-        <span className="font-mono text-gray-500">
-          Faucet address:{" "}
-          <span className="text-white">
-            0xc5ae0c80057661FfE0c28544F5Fa27328f92fFf2
-          </span>
-        </span>
+      <p className="text-sm text-gray-400 mb-8">
+        The Base Sepolia Faucet is your go-to source for testnet ETH on Base, offering a
+        fast, reliable, and login-free experience on the Base Sepolia network.
       </p>
       <div className="w-full max-w-md mb-8">
         <input
@@ -132,6 +125,13 @@ const Faucet = () => {
         <span className="text-xs text-gray-500">
           Disclaimer: This faucet is not associated with Base or Coinbase. It is
           independently developed and operated by an individual.
+        </span>
+        <br />
+        <span className="text-xs text-gray-500">
+          Faucet address:{" "}
+          <span className="text-white">
+            0xc5ae0c80057661FfE0c28544F5Fa27328f92fFf2
+          </span>
         </span>
       </footer>
     </div>
