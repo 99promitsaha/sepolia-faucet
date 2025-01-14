@@ -11,6 +11,8 @@ const Faucet = () => {
   const [remainingTime, setRemainingTime] = useState(null);
   const [faucetBalance, setFaucetBalance] = useState("N/A");
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [mathQuestion, setMathQuestion] = useState(null);
+  const [userAnswer, setUserAnswer] = useState("");
 
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
@@ -35,7 +37,6 @@ const Faucet = () => {
     }
   }, [address]);
 
-  // Fetch Faucet Balance
   useEffect(() => {
     const fetchBalance = async () => {
       try {
@@ -52,9 +53,28 @@ const Faucet = () => {
     fetchBalance();
   }, []);
 
+  useEffect(() => {
+    generateMathQuestion();
+  }, []);
+
+  const generateMathQuestion = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    setMathQuestion({
+      question: `What is ${num1} + ${num2}?`,
+      answer: num1 + num2,
+    });
+  };
+
   const sendEth = async () => {
     if (!isAddress(address)) {
       setMessage("Invalid Ethereum address");
+      return;
+    }
+
+    if (parseInt(userAnswer) !== mathQuestion.answer) {
+      setMessage("Incorrect answer to the math question. Please try again.");
+      generateMathQuestion();
       return;
     }
 
@@ -95,6 +115,7 @@ const Faucet = () => {
       setMessage("Transaction failed. Please try again.");
     } finally {
       setLoading(false);
+      generateMathQuestion();
     }
   };
 
@@ -126,7 +147,7 @@ const Faucet = () => {
             }`}
           ></div>
         </button>
-        <span className="text-xs">Toggle Theme</span> {/* Theme toggle label */}
+        <span className="text-xs">Toggle Theme</span>
       </div>
       <h1 className="text-3xl sm:text-4xl font-bold mb-4 flex items-center">
         <img src="/base-logo.svg" alt="Base Logo" className="w-12 h-12 mr-3" />
@@ -150,6 +171,23 @@ const Faucet = () => {
           } placeholder-gray-400`}
           disabled={cooldownActive}
         />
+        {mathQuestion && (
+          <div className="mb-4 flex items-center space-x-2">
+            <label className="text-sm font-medium">
+              Solve this: {mathQuestion.question}
+            </label>
+            <input
+              type="text"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              className={`p-1 w-24 rounded-lg border ${
+                theme === "dark"
+                  ? "border-gray-700 bg-gray-800 text-white"
+                  : "border-gray-300 bg-white text-black"
+              } placeholder-gray-400`}
+            />
+          </div>
+        )}
         <button
           onClick={sendEth}
           className={`w-full p-4 rounded-lg ${
@@ -164,7 +202,7 @@ const Faucet = () => {
           {cooldownActive ? (
             `Please wait ${remainingTime} hour(s)`
           ) : loading ? (
-            "Sending..."
+            <span className="text-white">Sending...</span>
           ) : (
             <span className="text-white">Send 0.001 ETH (Instant) ⚡️</span>
           )}
