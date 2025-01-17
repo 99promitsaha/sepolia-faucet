@@ -78,7 +78,7 @@ const Faucet = () => {
       const balanceInEth = parseFloat(formatEther(userBalance));
 
       if (balanceInEth > 0.002) {
-        setMessage("You already have sufficient balance in your wallet.");
+        setMessage("😏 You already have sufficient balance in your wallet. Please try later.");
         return false;
       }
 
