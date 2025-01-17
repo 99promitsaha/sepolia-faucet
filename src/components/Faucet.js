@@ -66,7 +66,35 @@ const Faucet = () => {
     });
   };
 
+  const checkUserBalance = async () => {
+    try {
+      if (!isAddress(address)) {
+        setMessage("Invalid Ethereum address");
+        return;
+      }
+
+      const provider = getProvider();
+      const userBalance = await provider.getBalance(address);
+      const balanceInEth = parseFloat(formatEther(userBalance));
+
+      if (balanceInEth > 0.002) {
+        setMessage("You already have sufficient balance in your wallet.");
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error fetching user balance:", error);
+      setMessage("Error checking wallet balance. Please try again.");
+      return false;
+    }
+  };
+
   const sendEth = async () => {
+    if (!(await checkUserBalance())) {
+      return;
+    }
+
     if (!isAddress(address)) {
       setMessage("Invalid Ethereum address");
       return;
