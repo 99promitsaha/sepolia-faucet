@@ -245,20 +245,9 @@ const Faucet = () => {
           theme === "dark" ? "text-gray-400" : "text-gray-800"
         }`}
       >
-        Built with <span className="text-blue-500">❤️</span> from India 🇮🇳 by{" "}
-        <a
-          href="https://x.com/99promitsaha"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:underline"
-        >
-          99promitsaha
-        </a>
-        <br />
-        <br />
         <span className="text-xs">
           Disclaimer: This faucet is not associated with Base or Coinbase. It is
-          independently developed and maintained.
+          independently developed and maintained by Individuals.
         </span>
         <br />
         <span className="text-xs">
