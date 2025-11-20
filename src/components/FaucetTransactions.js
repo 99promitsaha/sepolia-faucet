@@ -12,7 +12,7 @@ const FaucetTransactions = ({ theme }) => {
     const fetchTransactions = async () => {
       try {
         const response = await fetch(
-          `https://api-sepolia.basescan.org/api?module=account&action=txlist&address=${FAUCET_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${BASESCAN_API_KEY}`
+          `https://api.etherscan.io/v2/api?chainid=84532&module=account&action=txlist&address=${FAUCET_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${BASESCAN_API_KEY}`
         );
         const data = await response.json();
 
